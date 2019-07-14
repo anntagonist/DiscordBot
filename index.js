@@ -15,6 +15,9 @@ const twitchAccounts = require("./Modules/twitchaccounts.js");
 
 const wowGuide = require('./Modules/wowclass.js');
 
+var GphApiClient = require('giphy-js-sdk-core');
+giphy = GphApiClient("E3d7i4qO56EfgUofqBWBvrwuO7gFyXas");
+
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
@@ -56,6 +59,8 @@ client.on("message", async message => {
   const author = message.author.username;
 
   console.log(`${author}: !${command} [${args}]`);
+
+  var isDestroy = false;
 
   switch(command){
     case "stream":
@@ -141,15 +146,37 @@ client.on("message", async message => {
         break;
     case "logout":
         if(message.author.id !== twitchAccounts.getAdminId()) return;
-        client.destroy();
-        break;
+        await giphy.search("gifs", {"q": "bye"})
+            .then((response) => {
+                var totalRes = response.data.length;
+                console.log(`Found Gifs: ${totalRes}`);
+                var resIndex = Math.floor((Math.random()*100+1)) % totalRes;
+                var resFinal = response.data[resIndex];
+
+                message.channel.send(":wave: HenchBot Out!", {
+                    files: [resFinal.images.fixed_height.url]
+                }).catch(() => {
+                    console.log("failed to send giphy");
+                });
+            }).then(() => {
+                message.delete()
+                .catch(error => message.reply(`Failed to Delete Message due to: ${error}`));
+            }).then(() => {
+                //Wait 7.777 seconds for giphy to finish, then logout.
+                setTimeout(function(){
+                    client.destroy();
+                }, 7777);
+            }).catch(() => {
+                console.log("failed to giphy");
+            });
+        return;
     default:
         message.reply(`Sorry, but !${command} is not in my repertoire.  For a list of my commands try !commands`)
             .catch(error => console.log(`Unable to reply: ${error}`));
         break;
   }
   if(message.channel.type !== "dm" && command !== "purge"){
-      message.delete()
+       message.delete()
         .catch(error => message.reply(`Failed to Delete Message due to: ${error}`));
   }
 });
