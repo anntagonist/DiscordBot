@@ -13,7 +13,7 @@ const config = require("./config.json");
 
 const twitchAccounts = require("./Modules/twitchaccounts.js");
 
-const wowGuide = require('./Modules/wowclass.mjs');
+const wowGuide = require('./Modules/wowclass.js');
 
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
