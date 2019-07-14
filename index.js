@@ -15,8 +15,7 @@ const twitchAccounts = require("./Modules/twitchaccounts.js");
 
 const wowGuide = require('./Modules/wowclass.js');
 
-var GphApiClient = require('giphy-js-sdk-core');
-giphy = GphApiClient("E3d7i4qO56EfgUofqBWBvrwuO7gFyXas");
+const giphy = require('./Modules/giphy.js');
 
 client.on("ready", () => {
   // This event will run if the bot starts, and logs in, successfully.
@@ -146,29 +145,19 @@ client.on("message", async message => {
         break;
     case "logout":
         if(message.author.id !== twitchAccounts.getAdminId()) return;
-        await giphy.search("gifs", {"q": "bye"})
-            .then((response) => {
-                var totalRes = response.data.length;
-                console.log(`Found Gifs: ${totalRes}`);
-                var resIndex = Math.floor((Math.random()*100+1)) % totalRes;
-                var resFinal = response.data[resIndex];
-
-                message.channel.send(":wave: HenchBot Out!", {
-                    files: [resFinal.images.fixed_height.url]
-                }).catch(() => {
-                    console.log("failed to send giphy");
-                });
-            }).then(() => {
-                message.delete()
-                .catch(error => message.reply(`Failed to Delete Message due to: ${error}`));
-            }).then(() => {
-                //Wait 7.777 seconds for giphy to finish, then logout.
-                setTimeout(function(){
-                    client.destroy();
-                }, 7777);
-            }).catch(() => {
-                console.log("failed to giphy");
-            });
+        var parameter = 'bye';
+        var gif = await giphy.searchGif(parameter);
+        console.log(`Gif found: ${gif}`);
+        message.channel.send(":wave: Henchbot Out!", {
+            files: [gif]
+        }).catch(error => {
+            console.log(`Unable to send gif ${error}`);
+        });
+        message.delete()
+                .catch(error => console.log(`Unabled to Delete logout: ${error}`));
+        setTimeout(function(){
+            client.destroy();
+        }, 7777);
         return;
     default:
         message.reply(`Sorry, but !${command} is not in my repertoire.  For a list of my commands try !commands`)
