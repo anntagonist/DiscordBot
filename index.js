@@ -139,6 +139,10 @@ client.on("message", async message => {
         message.channel.send(commandsEmbed)
             .catch(error => message.reply(`Couldn't delete messages because of: ${error}`));
         break;
+    case "logout":
+        if(message.author.id !== twitchAccounts.getAdminId()) return;
+        client.destroy();
+        break;
     default:
         message.reply(`Sorry, but !${command} is not in my repertoire.  For a list of my commands try !commands`)
             .catch(error => console.log(`Unable to reply: ${error}`));
