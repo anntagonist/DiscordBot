@@ -17,10 +17,10 @@ exports.searchGif = async function(parameter){
 	return url;
 }
 
-exports.searchSticker = function(parameter){
+exports.searchSticker = async function(parameter){
 	var offset = Math.floor((Math.random()*10+1)) % 100;
 	var url;
-	await giphy.search("sticker", {"q": parameter, "offset": offset})
+	await giphy.search("stickers", {"q": parameter, "offset": offset})
 		.then((response) => {
 			var totalRes = response.data.length;
 			console.log(`Found Gifs: ${totalRes}`);
