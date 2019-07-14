@@ -30,7 +30,7 @@ client.on("ready", async () => {
   var parameter = "Hello";
   const gif = await giphy.searchSticker(parameter);
   console.log(`Online Gif: ${gif}`);
-  testingChannel.send('Hench Bot Online!', {
+  defaultChannel.send('Hench Bot Online!', {
       files: [gif]
   }).catch(error => console.log(`Unable to send gif: ${error}`));
 });
@@ -68,8 +68,6 @@ client.on("message", async message => {
   const author = message.author.username;
 
   console.log(`${author}: !${command} [${args}]`);
-
-  var isDestroy = false;
 
   switch(command){
     case "stream":
@@ -158,7 +156,7 @@ client.on("message", async message => {
         var parameter = 'bye';
         var gif = await giphy.searchGif(parameter);
         console.log(`Gif found: ${gif}`);
-        message.channel.send("Hench Bot Out!", {
+        defaultChannel.send("Hench Bot Out!", {
             files: [gif]
         }).catch(error => {
             console.log(`Unable to send gif ${error}`);
@@ -168,6 +166,27 @@ client.on("message", async message => {
         setTimeout(function(){
             client.destroy();
         }, 7777);
+        return;
+
+    case "sticker":
+        var sticker = await giphy.searchSticker(args);
+        console.log(`Sticker: ${sticker}`);
+        message.channel.send(``, {
+            files: [sticker]
+        }).catch(error => {
+            message.reply(`Failed to send sticker: ${error}`)
+                .catch(error => console.log(`${error}`));
+        });
+        return;
+    case "gif":
+        var gif = await giphy.searchGif(args);
+        console.log(`Gif: ${gif}`);
+        message.channel.send(``, {
+            files: [gif]
+        }).catch(error => {
+            message.reply(`Failed to send gif: ${error}`)
+                .catch(error => console.log(`${error}`));
+        });
         return;
     default:
         message.reply(`Sorry, but !${command} is not in my repertoire.  For a list of my commands try !commands`)
