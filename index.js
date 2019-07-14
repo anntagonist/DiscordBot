@@ -17,12 +17,22 @@ const wowGuide = require('./Modules/wowclass.js');
 
 const giphy = require('./Modules/giphy.js');
 
-client.on("ready", () => {
+var defaultChannel;
+
+client.on("ready", async () => {
   // This event will run if the bot starts, and logs in, successfully.
   console.log(`Bot has started, with ${client.users.size} users, in ${client.channels.size} channels of ${client.guilds.size} guilds.`); 
   // Example of changing the bot's playing game to something useful. `client.user` is what the
   // docs refer to as the "ClientUser".
   client.user.setActivity(`Serving ${client.guilds.size} servers`);
+  defaultChannel = client.channels.first();
+  testingChannel = client.channels.last();
+  var parameter = "Hello";
+  const gif = await giphy.searchSticker(parameter);
+  console.log(`Online Gif: ${gif}`);
+  testingChannel.send('Hench Bot Online!', {
+      files: [gif]
+  }).catch(error => console.log(`Unable to send gif: ${error}`));
 });
 
 client.on("guildCreate", guild => {
@@ -148,7 +158,7 @@ client.on("message", async message => {
         var parameter = 'bye';
         var gif = await giphy.searchGif(parameter);
         console.log(`Gif found: ${gif}`);
-        message.channel.send(":wave: Henchbot Out!", {
+        message.channel.send("Hench Bot Out!", {
             files: [gif]
         }).catch(error => {
             console.log(`Unable to send gif ${error}`);
